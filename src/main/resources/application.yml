@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: infra-oauth2
+  main:
+    web-application-type: servlet
+
+server:
+  port: 9000
+  undertow:
+    threads:
+      io: 4
+      worker: 32
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces
+
+infra:
+  tracing:
+    enabled: true
+    baggage-fields:
+      - userId
+      - tenantId
+      - requestId
+  log:
+    enabled: true
+  cors:
+    enabled: false
+  xss:
+    enabled: false

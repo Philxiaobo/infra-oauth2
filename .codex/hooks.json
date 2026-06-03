@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "apply_patch|exec_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '记得同步对应 spec 的 Tasks 状态和 AGENTS.md 实现状态表; session 结束前追加 WORKLOG 条目' >&2"
+          }
+        ]
+      }
+    ]
+  }
+}
