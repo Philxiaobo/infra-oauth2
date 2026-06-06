@@ -35,6 +35,9 @@ Java 21 + Spring Boot 3.5.14 + Spring Security Authorization Server + Spring MVC
 ### ✅ 已实现
 | 模块 | 关键位置 | 说明 |
 |------|----------|------|
+| 云原生部署配置 | `deploy/k8s`, `deploy/local`, `src/main/resources/application.yml` | 已按 `infra-genesis` 部署规范落地 Kubernetes ConfigMap/Secret/Deployment/Service 和 configtree 入口 |
+| IAM/RBAC SQL 表结构 | `docs/sql/2026-06-06-init-rbac-schema.sql`, `docs/conventions/sql.md` | 已按 SQL Convention 设计 IAM 用户、角色、权限、用户角色、角色权限五表，并明确后续权限校验约定 |
+| OAuth2 MVP 基线 | `src/main/java/com/phil/infra/oauth2/config`, `src/main/java/com/phil/infra/oauth2/audit` | 已启用 Spring Authorization Server、OIDC metadata、JWK Set、seed clients/users、JWT claim 定制和基础审计事件 |
 | 服务父 POM | `pom.xml` | 已继承 `infra-service-parent`，公共依赖版本由 `infra-genesis` 管理，OAuth2 独有依赖保留在本服务 |
 | Web 基线 | `pom.xml` | Servlet MVC、Undertow、Validation、Actuator 等公共 Web 能力由 `infra-web` 承接，本服务 POM 不重复声明 |
 | 项目骨架 | `pom.xml`, `src/main/java` | 已创建 OAuth2 认证鉴权服务 基础 Maven / Spring Boot 骨架 |
@@ -43,12 +46,14 @@ Java 21 + Spring Boot 3.5.14 + Spring Security Authorization Server + Spring MVC
 ### 🚧 进行中
 | 项 | 原因 / 阻塞 |
 |----|-------------|
-| 业务能力实现 | 当前仅完成项目骨架，具体能力需按 spec 继续 |
+| IAM/RBAC 运行时代码 | 当前仅完成 SQL 表结构，Java entity / mapper / repository / service 和权限校验链路需后续 spec 实现 |
+| OAuth2 生产化能力 | JDBC 持久化、真实用户体系/企业 IdP、生产私钥托管、JWK 轮换、管理端 client CRUD 仍需后续 spec |
 
 ### ⬜ 计划中
 | 项 | spec 文件 / 预期 |
 |----|-------------------|
-| 具体业务能力 | 后续按 `specs/<feature>.spec.md` 逐项实现 |
+| JDBC 持久化 | 后续按 `specs/<feature>.spec.md` 实现 registered client、authorization、consent 持久化 |
+| 安全增强 | 后续按 `specs/<feature>.spec.md` 实现 refresh token reuse 检测、JWK 轮换、client secret 轮换 |
 
 ### ❌ 已归档 / 放弃
 | 项 | 去向 |
@@ -63,6 +68,8 @@ Java 21 + Spring Boot 3.5.14 + Spring Security Authorization Server + Spring MVC
 | `docs/decisions/README.md` | ADR 索引 | 遇到"为什么这么设计" |
 | `docs/architecture/overview.md` | 架构事实表 | 判断模块边界和核心链路 |
 | `docs/conventions/directory-structure.md` | 本服务目录结构 | 初始化或调整包结构前 |
+| `docs/conventions/sql.md` | SQL 建表与脚本留存规范 | 新增或调整 SQL 前 |
+| `deploy/k8s/README.md` | Kubernetes 部署配置说明 | 调整 ConfigMap / Secret / Deployment 前 |
 | `docs/conventions/verification.md` | 验证入口 | 改完代码准备测试时 |
 | `docs/conventions/testing.md` | 测试策略 | 判断该补什么测试时 |
 | `docs/conventions/risk-levels.md` | 变更风险等级 | 判断是否要扩大检索和验证时 |

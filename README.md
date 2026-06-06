@@ -24,10 +24,28 @@ cd ../infra-oauth2
 JAVA_HOME=/Users/photonpay/software/jdk/jdk-21.0.10.jdk/Contents/Home mvn -q test
 ```
 
+## OAuth2 MVP 基线
+
+- Issuer: `http://localhost:9000`，可通过 `INFRA_OAUTH2_ISSUER` 覆盖
+- OIDC metadata: `GET /.well-known/openid-configuration`
+- OAuth2 metadata: `GET /.well-known/oauth-authorization-server`
+- JWK Set: `GET /oauth2/jwks`
+- Seed clients: `browser-client` 使用 Authorization Code + PKCE，`service-client` 使用 Client Credentials
+- Seed user/client secret 仅用于本地开发，非本地环境必须通过环境配置或 `application-local.yml` 覆盖
+
+## 云原生部署
+
+- 部署目录: `deploy/k8s`
+- 本地 ConfigMap / Secret 模拟目录: `deploy/local`
+- 配置读取: Spring Boot `configtree`，默认读取 `/etc/infra/config/` 和 `/etc/infra/secrets/`
+- 服务发现: Kubernetes Service / DNS，服务名 `infra-oauth2`
+- 规范来源: `infra-genesis/docs/conventions/microservice-deployment-standard.md`
+
 ## 文档
 
 - [AGENTS.md](./AGENTS.md) — AI 协作主文档
 - [specs/](./specs/) — 功能 spec
+- [deploy/k8s/README.md](./deploy/k8s/README.md) — Kubernetes 部署配置说明
 - [docs/architecture/overview.md](./docs/architecture/overview.md) — 架构事实表
 - [docs/conventions/directory-structure.md](./docs/conventions/directory-structure.md) — 本服务目录结构
 - [WORKLOG.md](./WORKLOG.md) — session 倒序日志

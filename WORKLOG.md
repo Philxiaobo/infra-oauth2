@@ -4,6 +4,101 @@
 
 ---
 
+## 2026-06-06 (云原生部署配置)
+
+### 🎯 目标
+- 参考 `/Users/photonpay/work/github/infra-genesis/deploy` 和微服务部署规范，为 `infra-oauth2` 建立 Kubernetes ConfigMap / Secret / Deployment / Service 配置文件
+
+### ✅ 完成
+- spec: 新增并完成 `cloud-native-deploy-config`，明确 P1 风险、非目标、回滚思路和验证范围 (`specs/cloud-native-deploy-config.spec.md:1`, `specs/README.md:19`)
+- deploy: 新增 `deploy/k8s`，包含 ConfigMap、Secret example、Deployment、Service、Kustomization 和说明文档 (`deploy/k8s/deployment.yaml:1`, `deploy/k8s/configmap.yaml:1`, `deploy/k8s/README.md:1`)
+- local: 新增 `deploy/local` 本地 configtree 模拟目录，Secret 本地值通过 `.gitignore` 忽略 (`deploy/local/README.md:1`, `deploy/local/.gitignore:1`)
+- config: `application.yml` 增加 Kubernetes configtree import，默认读取 `/etc/infra/config/` 和 `/etc/infra/secrets/` (`src/main/resources/application.yml:4`)
+- docs: 同步 specs 索引、AGENTS 状态、README 部署入口和验证命令 (`AGENTS.md:38`, `README.md:37`, `docs/conventions/verification.md:10`)
+
+### 🚧 进行中 / 未完成
+- `kubectl kustomize deploy/k8s` 未运行：本机未安装 `kubectl`
+- 镜像地址 `com.phil/infra-oauth2:1.0.0` 仍是环境替换项，需接入 CI/CD registry 后确认
+- 生产 `infra.oauth2.issuer` 域名需由 Gateway / Ingress / SRE 平台最终确认
+
+### 📌 下次继续
+- 接入真实镜像仓库和 GitOps 环境 overlay
+- 结合 JDBC / Redis / JWT 私钥托管 spec，收敛 Secret key
+- 如需要公网访问，补 Ingress / Gateway 路由 spec
+
+### 💡 记录
+- 验证命令：`git diff --check` 通过
+- 验证命令：`ruby -e "require 'yaml'; Dir['deploy/k8s/*.yaml'].each { |path| YAML.safe_load(File.read(path), aliases: false) }"` 通过
+- 验证命令：`ruby -e "require 'yaml'; require 'pathname'; k = YAML.safe_load(File.read('deploy/k8s/kustomization.yaml')); missing = k.fetch('resources').reject { |r| Pathname('deploy/k8s').join(r).file? }; abort('missing resources: ' + missing.join(', ')) unless missing.empty?"` 通过
+- 验证命令：`rg -n "infra-service" deploy/k8s deploy/local` 无匹配，确认模板占位值已替换
+- 验证命令：`JAVA_HOME=/Users/photonpay/software/jdk/jdk-21.0.10.jdk/Contents/Home mvn -q test` 通过；仅出现既有 Mockito / ByteBuddy 动态 agent 警告
+
+---
+
+## 2026-06-06 (IAM/RBAC 表结构设计)
+
+### 🎯 目标
+- 按用户提供的 SQL Convention 设计基础 IAM/RBAC 用户权限体系表结构，并将 SQL 规范和脚本留存在项目文档目录
+
+### ✅ 完成
+- spec: 新增并完成 `rbac-schema`，明确 P0 风险、非目标、软删除唯一性策略、权限校验约定和回滚思路 (`specs/rbac-schema.spec.md:1`, `specs/README.md:19`)
+- convention: 固化 SQL 建表、字段、注释、基础字段、软删除和脚本留存规范 (`docs/conventions/sql.md:1`)
+- sql: 新增 IAM/RBAC 初始化 SQL，包含 `t_iam_user`、`t_iam_role`、`t_iam_permission`、`t_iam_user_role`、`t_iam_role_permission` 五张表 (`docs/sql/2026-06-06-init-rbac-schema.sql:13`)
+- design: 所有跨表引用均使用业务 id，所有二值状态字段使用 `char(1)` 的 `Y/N`，软删除唯一性使用 `active_*_key` 生成列，表名前缀统一使用 `t_iam_` (`docs/sql/2026-06-06-init-rbac-schema.sql:5`)
+- authz: 后续权限校验按默认拒绝、allow-only、scope / permission 分层、Gateway 粗粒度与服务侧细粒度边界设计 (`specs/rbac-schema.spec.md:82`)
+- docs: AGENTS 增加 IAM/RBAC SQL 表结构状态和 SQL convention 文档入口 (`AGENTS.md:35`, `AGENTS.md:70`)
+
+### 🚧 进行中 / 未完成
+- Java 运行时代码: entity、mapper、repository、service 和权限查询链路尚未实现
+- DB 实机验证: 本地未发现 `mysql` 客户端，本轮仅执行静态 SQL 检查
+- 扩展权限模型: 组织架构、岗位、数据权限、ABAC / policy engine 暂未纳入基础 IAM/RBAC
+
+### 📌 下次继续
+- 新建 IAM/RBAC Java 持久化 spec，基于本 SQL 落 entity / mapper / repository
+- 补充 MySQL 实例语法验证和 migration 执行验证
+- 结合 Authorization Server token 生成，设计 `roles` / `scope` claim 从 RBAC 表解析的查询链路
+
+### 💡 记录
+- 验证命令：`git diff --check` 通过
+- 验证命令：`rg -n "CREATE TABLE|COMMENT =|COMMENT '" docs/sql/2026-06-06-init-rbac-schema.sql` 通过，确认 5 张表和字段/表注释
+- 验证命令：`rg -n "(tenant|user|role|permission|user_role|role_permission)_id.*bigint" docs/sql/2026-06-06-init-rbac-schema.sql` 无匹配，确认跨表业务 id 未使用 bigint 自增主键类型
+- 验证命令：`rg -n "tinyint|FOREIGN KEY|REFERENCES" docs/sql/2026-06-06-init-rbac-schema.sql` 无匹配，确认未使用 tinyint 状态字段且未建物理外键
+- 验证命令：`rg -n "t_rbac_" docs/sql/2026-06-06-init-rbac-schema.sql` 无匹配，确认 SQL 表名前缀已切换为 `t_iam_`
+
+---
+
+## 2026-06-06 (OAuth2 MVP 基线初始化)
+
+### 🎯 目标
+- 参考 `/Users/photonpay/Desktop/infra-gateway-oauth2-push-implementation.md`，为 infra-oauth2 初始化首批 Spring Authorization Server MVP 能力
+
+### ✅ 完成
+- spec: 新增并完成 `oauth2-authorization-server-mvp`，明确 P0/P1 范围、非目标、回滚思路和后续 JDBC/KMS 待决项 (`specs/oauth2-authorization-server-mvp.spec.md:1`, `specs/README.md:19`)
+- oauth2: 启用 Authorization Server 安全链、OIDC metadata、JWK Set、JWT access token claim 定制、issuer 配置和默认 form login (`src/main/java/com/phil/infra/oauth2/config/AuthorizationServerSecurityConfiguration.java:43`, `src/main/resources/application.yml:30`)
+- bootstrap: 初始化 browser public client、service confidential client、本地 seed user、in-memory authorization/consent 服务，并禁用 password / implicit grant (`src/main/java/com/phil/infra/oauth2/config/InfraOAuth2Properties.java:57`, `src/main/java/com/phil/infra/oauth2/config/OAuth2BootstrapConfiguration.java:37`)
+- audit: 新增 OAuth2 安全审计事件、发布器和 Spring Security 认证事件监听 (`src/main/java/com/phil/infra/oauth2/audit/OAuth2AuditEvent.java:15`, `src/main/java/com/phil/infra/oauth2/audit/OAuth2SecurityAuditListener.java:22`)
+- test: 新增 seed client/issuer/audit 测试和 OIDC/JWK 发现端点测试 (`src/test/java/com/phil/infra/oauth2/config/OAuth2BootstrapConfigurationTest.java:40`, `src/test/java/com/phil/infra/oauth2/config/OAuth2DiscoveryEndpointTest.java:23`)
+- docs: README / AGENTS / verification / `.env.example` 同步 OAuth2 MVP 基线和本地覆盖入口 (`README.md:27`, `AGENTS.md:35`, `docs/conventions/verification.md:8`, `.env.example:1`)
+
+### 🚧 进行中 / 未完成
+- JDBC 持久化: registered client、authorization、consent 仍为 in-memory MVP，需确认 MySQL/PostgreSQL 与数据访问 starter 后单独实现
+- 生产安全增强: JWK 轮换、KMS/Vault/Secret Manager 私钥托管、refresh token reuse 检测、client secret 轮换仍未实现
+- 端到端授权码流程: 本轮验证 metadata/JWK 和配置约束，未做真实浏览器授权码回调联调
+
+### 📌 下次继续
+- 新建 JDBC 持久化 spec，落地 Spring Authorization Server 官方 schema 和 client/authorization/consent 存储
+- 增加授权码 + PKCE、client_credentials、refresh token 的端到端接口测试
+- 明确生产私钥托管与 JWK 轮换方案，必要时写 ADR
+
+### 💡 记录
+- RED：`OAuth2BootstrapConfigurationTest` 首次失败，缺少 `com.phil.infra.oauth2.audit` 与 OAuth2 配置实现
+- GREEN：`JAVA_HOME=/Users/photonpay/software/jdk/jdk-21.0.10.jdk/Contents/Home mvn -q -Dtest=OAuth2BootstrapConfigurationTest test` 通过
+- 验证命令：`JAVA_HOME=/Users/photonpay/software/jdk/jdk-21.0.10.jdk/Contents/Home mvn -q -Dtest=OAuth2BootstrapConfigurationTest,OAuth2DiscoveryEndpointTest test` 通过
+- 验证命令：`JAVA_HOME=/Users/photonpay/software/jdk/jdk-21.0.10.jdk/Contents/Home mvn -q test` 通过；当前 JDK 仍输出 Mockito / ByteBuddy 动态 agent 未来兼容警告
+- 验证命令：`git diff --check` 通过
+
+---
+
 ## 2026-06-06 (清理公共 Web 依赖)
 
 ### 🎯 目标

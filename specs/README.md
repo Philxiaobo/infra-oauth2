@@ -16,6 +16,9 @@
 
 | spec | 状态 | 负责人 | 最后更新 | 关联 ADR |
 |------|------|--------|----------|----------|
+| [cloud-native-deploy-config.spec.md](cloud-native-deploy-config.spec.md) | ✅ Implemented | Phil | 2026-06-06 | infra-genesis ADR-0003 |
+| [rbac-schema.spec.md](rbac-schema.spec.md) | ✅ Implemented | Phil | 2026-06-06 | - |
+| [oauth2-authorization-server-mvp.spec.md](oauth2-authorization-server-mvp.spec.md) | ✅ Implemented | Phil | 2026-06-06 | - |
 | [web-dependency-cleanup.spec.md](web-dependency-cleanup.spec.md) | ✅ Implemented | Phil | 2026-06-06 | - |
 | [service-parent-migration.spec.md](service-parent-migration.spec.md) | ✅ Implemented | Phil | 2026-06-06 | - |
 | [project-bootstrap.spec.md](project-bootstrap.spec.md) | ✅ Implemented | Phil | 2026-06-03 | - |

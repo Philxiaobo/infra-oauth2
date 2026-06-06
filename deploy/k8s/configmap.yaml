@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: infra-oauth2-config
+  namespace: infra
+  labels:
+    app.kubernetes.io/name: infra-oauth2
+    app.kubernetes.io/part-of: infra-platform
+data:
+  server.port: "9000"
+  infra.oauth2.issuer: "https://oauth2.infra.example.com"
+  infra.oauth2.token.audiences: "infra-gateway,infra-push"
+  management.tracing.sampling.probability: "0.1"
+  management.otlp.tracing.endpoint: "http://otel-collector:4318/v1/traces"
+  infra.tracing.enabled: "true"
+  infra.log.enabled: "true"
+  infra.log.slow-request-ms: "3000"
+  infra.cors.enabled: "false"
+  infra.xss.enabled: "false"

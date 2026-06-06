@@ -1,6 +1,10 @@
 spring:
   application:
     name: infra-oauth2
+  config:
+    import:
+      - optional:configtree:/etc/infra/config/
+      - optional:configtree:/etc/infra/secrets/
   main:
     web-application-type: servlet
 
@@ -28,6 +32,8 @@ management:
       endpoint: http://localhost:4318/v1/traces
 
 infra:
+  oauth2:
+    issuer: ${INFRA_OAUTH2_ISSUER:http://localhost:9000}
   tracing:
     enabled: true
     baggage-fields:

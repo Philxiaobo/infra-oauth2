@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infra-oauth2
+  namespace: infra
+  labels:
+    app.kubernetes.io/name: infra-oauth2
+    app.kubernetes.io/part-of: infra-platform
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: infra-oauth2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: infra-oauth2
+        app.kubernetes.io/part-of: infra-platform
+      annotations:
+        infra.phil.com/config-version: "2026-06-06-001"
+    spec:
+      containers:
+        - name: infra-oauth2
+          image: com.phil/infra-oauth2:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9000
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configtree:/etc/infra/config/,optional:configtree:/etc/infra/secrets/"
+          volumeMounts:
+            - name: infra-config
+              mountPath: /etc/infra/config/
+              readOnly: true
+            - name: infra-secrets
+              mountPath: /etc/infra/secrets/
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            initialDelaySeconds: 40
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+      volumes:
+        - name: infra-config
+          configMap:
+            name: infra-oauth2-config
+        - name: infra-secrets
+          secret:
+            secretName: infra-oauth2-secret
+            optional: true
