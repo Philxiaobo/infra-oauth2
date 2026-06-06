@@ -4,6 +4,32 @@
 
 ---
 
+## 2026-06-06 (迁移 infra-service-parent)
+
+### 🎯 目标
+- 将 OAuth2 POM 从直接继承 Spring Boot parent 迁移到 `infra-service-parent`，统一公共依赖和插件版本来源
+
+### ✅ 完成
+- pom: parent 切换为 `com.phil.infra:infra-service-parent:1.0-SNAPSHOT`，删除 `infra.version` 和内部依赖显式版本 (`pom.xml:7`, `pom.xml:47`, `pom.xml:51`)
+- deps: `infra-web`、`infra-tracing-starter` 删除显式版本，Authorization Server 等职责型依赖继续保留在本服务 POM (`pom.xml:35`)
+- spec: 新增 POM 迁移 spec 并同步索引 (`specs/service-parent-migration.spec.md:1`, `specs/README.md:19`)
+- docs: README、AGENTS 同步服务父 POM 基线；保留已有本地 Maven/JDK 环境补充 (`README.md:8`, `AGENTS.md:39`)
+- hygiene: `.gitignore` 增加 `logs/`，避免测试生成的日志目录进入提交范围 (`.gitignore:5`)
+
+### 🚧 进行中 / 未完成
+- 登录、token 签发、客户端管理等业务能力仍未实现
+
+### 📌 下次继续
+- 继续按新 spec 实现 OAuth2 第一批认证鉴权能力
+
+### 💡 记录
+- RED：POM 结构检查失败，当前 parent 为 `spring-boot-starter-parent`
+- GREEN：POM 结构检查通过，parent 已切到 `infra-service-parent`，内部依赖未声明版本
+- 验证命令：`JAVA_HOME=/Users/photonpay/software/jdk/jdk-21.0.10.jdk/Contents/Home mvn -q test` 通过
+- 验证命令：`git diff --check` 通过
+
+---
+
 ## 2026-06-03 (项目初始化)
 
 ### 🎯 目标

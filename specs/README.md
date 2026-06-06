@@ -16,6 +16,7 @@
 
 | spec | 状态 | 负责人 | 最后更新 | 关联 ADR |
 |------|------|--------|----------|----------|
+| [service-parent-migration.spec.md](service-parent-migration.spec.md) | ✅ Implemented | Phil | 2026-06-06 | - |
 | [project-bootstrap.spec.md](project-bootstrap.spec.md) | ✅ Implemented | Phil | 2026-06-03 | - |
 
 ## 约定

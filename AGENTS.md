@@ -12,6 +12,11 @@
 6. 相对时间转绝对日期:"昨天" → "YYYY-MM-DD"
 7. P0/P1 改动必须按 `docs/conventions/risk-levels.md` 扩大验证并执行 session-close
 8. 完成功能前必须记录验证命令;无法验证要写明原因和替代检查
+9. ## 本地 Maven/JDK 环境
+- `JAVA_HOME=/Users/photonpay/software/jdk/jdk-21.0.10.jdk/Contents/Home`
+- Maven 本地仓库: `/Users/photonpay/software/maven/repository`
+- Maven settings: `/Users/photonpay/software/maven/apache-maven-3.9.14/conf/settings.xml`
+10. vibe coding 生成的骨架默认都需要提交到Git
 
 ## 技术栈
 
@@ -25,11 +30,12 @@ Java 21 + Spring Boot 3.5.14 + Spring Security Authorization Server + Spring MVC
 
 本服务按 `docs/conventions/directory-structure.md` 维护目录结构，标准来源为 `infra-genesis/docs/conventions/microservice-directory-structure.md`。
 
-## 📊 实现状态总览(2026-06-03)
+## 📊 实现状态总览(2026-06-06)
 
 ### ✅ 已实现
 | 模块 | 关键位置 | 说明 |
 |------|----------|------|
+| 服务父 POM | `pom.xml` | 已继承 `infra-service-parent`，公共依赖版本由 `infra-genesis` 管理，OAuth2 独有依赖保留在本服务 |
 | 项目骨架 | `pom.xml`, `src/main/java` | 已创建 OAuth2 认证鉴权服务 基础 Maven / Spring Boot 骨架 |
 | 协作文档 | `specs/`, `docs/`, `WORKLOG.md` | 已接入 vibe coding 文档体系 |
 

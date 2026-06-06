@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.14</version>
+        <groupId>com.phil.infra</groupId>
+        <artifactId>infra-service-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>com.phil.infra</groupId>
@@ -15,12 +15,6 @@
     <version>1.0-SNAPSHOT</version>
     <name>infra-oauth2</name>
     <description>Infrastructure OAuth2 authorization service</description>
-
-    <properties>
-        <java.version>21</java.version>
-        <maven.compiler.release>21</maven.compiler.release>
-        <infra.version>1.0-SNAPSHOT</infra.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -52,12 +46,10 @@
         <dependency>
             <groupId>com.phil.infra</groupId>
             <artifactId>infra-web</artifactId>
-            <version>${infra.version}</version>
         </dependency>
         <dependency>
             <groupId>com.phil.infra</groupId>
             <artifactId>infra-tracing-starter</artifactId>
-            <version>${infra.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

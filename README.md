@@ -6,10 +6,14 @@
 
 Java 21 + Spring Boot 3.5.14 + Spring Security Authorization Server + Spring MVC + Maven
 
+## 依赖基线
+
+本服务继承 `com.phil.infra:infra-service-parent:1.0-SNAPSHOT`。Spring Boot parent、公共插件和 `infra-*` 版本由 `infra-genesis` 统一维护；本服务只保留 OAuth2 / Authorization Server 等职责型独有依赖。
+
 ## 快速开始
 
 ```bash
-# 如本地尚未安装 infra-genesis 依赖，先在相邻仓库执行:
+# 如本地尚未安装 infra-genesis / infra-service-parent 依赖，先在相邻仓库执行:
 cd ../infra-genesis
 JAVA_HOME=/Users/photonpay/software/jdk/jdk-21.0.10.jdk/Contents/Home mvn -q -DskipTests install
 
