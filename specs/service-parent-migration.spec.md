@@ -19,7 +19,7 @@
 - [x] ✅ POM parent 切换为 `com.phil.infra:infra-service-parent:1.0-SNAPSHOT`(`pom.xml:7`)
 - [x] ✅ 删除本服务散落的 `infra.version` 属性(`pom.xml:18`)
 - [x] ✅ 删除内部依赖 `infra-web` / `infra-tracing-starter` 上的显式版本，版本交给底层父 POM / BOM 管理(`pom.xml:47`, `pom.xml:51`)
-- [x] ✅ 保留 OAuth2 职责独有依赖：Spring Security Authorization Server、Servlet MVC、Undertow、Validation、Actuator(`pom.xml:19`)
+- [x] ✅ 保留 OAuth2 职责独有依赖：Spring Security Authorization Server；Servlet MVC、Undertow、Validation、Actuator 统一由 `infra-web` 承接(`pom.xml:20`, `pom.xml:24`)
 - [x] ✅ 同步 spec 索引、AGENTS 实现状态、README 和 WORKLOG(`specs/README.md:19`, `AGENTS.md:39`, `README.md:8`, `WORKLOG.md:6`)
 
 ### 2.2 非目标(Non-goals)
@@ -43,14 +43,14 @@ infra-genesis
 
 - 公共构建和依赖版本由 `infra-service-parent` / `infra-genesis` 管理。
 - OAuth2 职责型依赖继续留在本服务 POM：`spring-boot-starter-oauth2-authorization-server`。
-- Servlet MVC 基础能力使用 `infra-web`，链路追踪使用 `infra-tracing-starter`，二者都不声明版本。
+- Servlet MVC、Undertow、Validation、Actuator 等公共 Web 基础能力使用 `infra-web`，链路追踪使用 `infra-tracing-starter`，二者都不声明版本。
 
 ## 4. 验收标准(Verify)
 
 ### 4.1 功能用例
 - [x] ✅ POM 不再直接继承 `spring-boot-starter-parent`。
 - [x] ✅ POM 中 `com.phil.infra` 依赖不再声明版本。
-- [x] ✅ OAuth2 职责依赖仍保留在本服务 POM。
+- [x] ✅ OAuth2 职责依赖仍保留在本服务 POM，公共 Web 基线不再重复声明。
 
 ### 4.2 测试清单
 - [x] ✅ RED: `ruby -rrexml/document -e "doc=REXML::Document.new(File.read('pom.xml')); parent=REXML::XPath.first(doc,'/project/parent/artifactId')&.text; abort('expected infra-service-parent, got ' + parent.to_s) unless parent == 'infra-service-parent'; forbidden=REXML::XPath.match(doc, '//dependency/artifactId[text()=\\\"spring-cloud-dependencies\\\"]'); abort('spring-cloud-dependencies still imported') unless forbidden.empty?; infra_versions=REXML::XPath.match(doc, '//dependency[groupId/text()=\\\"com.phil.infra\\\"]/version'); abort('internal dependency versions still present') unless infra_versions.empty?"`
@@ -64,7 +64,7 @@ infra-genesis
 
 - [x] ✅ T1: 切换 POM parent 到 `infra-service-parent`(`pom.xml:7`)
 - [x] ✅ T2: 删除 `infra.version` 和内部依赖显式版本(`pom.xml:18`, `pom.xml:47`, `pom.xml:51`)
-- [x] ✅ T3: 保留 OAuth2 职责独有依赖(`pom.xml:35`)
+- [x] ✅ T3: 保留 OAuth2 职责独有依赖，公共 Web 基线由 `infra-web` 承接(`pom.xml:20`, `pom.xml:24`)
 - [x] ✅ T4: 同步 spec 索引、AGENTS、README、WORKLOG(`specs/README.md:19`, `AGENTS.md:39`, `README.md:8`, `WORKLOG.md:6`)
 - [x] ✅ T5: 完成 GREEN / Maven / diff 验证(`pom.xml:1`)
 

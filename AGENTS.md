@@ -36,6 +36,7 @@ Java 21 + Spring Boot 3.5.14 + Spring Security Authorization Server + Spring MVC
 | 模块 | 关键位置 | 说明 |
 |------|----------|------|
 | 服务父 POM | `pom.xml` | 已继承 `infra-service-parent`，公共依赖版本由 `infra-genesis` 管理，OAuth2 独有依赖保留在本服务 |
+| Web 基线 | `pom.xml` | Servlet MVC、Undertow、Validation、Actuator 等公共 Web 能力由 `infra-web` 承接，本服务 POM 不重复声明 |
 | 项目骨架 | `pom.xml`, `src/main/java` | 已创建 OAuth2 认证鉴权服务 基础 Maven / Spring Boot 骨架 |
 | 协作文档 | `specs/`, `docs/`, `WORKLOG.md` | 已接入 vibe coding 文档体系 |
 
@@ -79,6 +80,7 @@ Java 21 + Spring Boot 3.5.14 + Spring Security Authorization Server + Spring MVC
 
 - **命名**: Java 标准命名;接口字段统一 camelCase
 - **配置**: 统一 `@ConfigurationProperties`，禁止 `@Value`
+- **Web 基线**: Servlet MVC、Undertow、Validation、Actuator 统一来自 `infra-web`，OAuth2 POM 只保留认证鉴权职责依赖
 - **测试**: 单测和源文件对称目录;集成测试不 mock 关键依赖(DB/MQ/缓存)
 - **提交**: `<type>(<scope>): <subject>` 格式(feat/fix/refactor/docs/test/chore);高频小 commit
 - **Secrets**: `.env` 和 `application-local.yml` 进 `.gitignore`;`.env.example` 提供模板

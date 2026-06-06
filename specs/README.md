@@ -16,6 +16,7 @@
 
 | spec | 状态 | 负责人 | 最后更新 | 关联 ADR |
 |------|------|--------|----------|----------|
+| [web-dependency-cleanup.spec.md](web-dependency-cleanup.spec.md) | ✅ Implemented | Phil | 2026-06-06 | - |
 | [service-parent-migration.spec.md](service-parent-migration.spec.md) | ✅ Implemented | Phil | 2026-06-06 | - |
 | [project-bootstrap.spec.md](project-bootstrap.spec.md) | ✅ Implemented | Phil | 2026-06-03 | - |
 

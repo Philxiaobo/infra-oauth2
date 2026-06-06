@@ -4,6 +4,30 @@
 
 ---
 
+## 2026-06-06 (清理公共 Web 依赖)
+
+### 🎯 目标
+- 清理 OAuth2 POM 中重复声明的公共 Web 基线依赖，让 Servlet MVC、Undertow、Validation、Actuator 等统一由 `infra-web` 承接
+
+### ✅ 完成
+- pom: 删除 `spring-boot-starter-web`、`spring-boot-starter-undertow`、`spring-boot-starter-validation`、`spring-boot-starter-actuator` 直接声明，仅保留 Authorization Server、`infra-web`、`infra-tracing-starter` 和 test starter (`pom.xml:19`)
+- docs: README / AGENTS 明确公共 Web 基线由 `infra-web` 提供，OAuth2 POM 只保留认证鉴权职责依赖 (`README.md:13`, `AGENTS.md:39`)
+- spec: 新增并完成 `web-dependency-cleanup` spec，同时修正 `service-parent-migration` 中关于 OAuth2 依赖边界的表述 (`specs/web-dependency-cleanup.spec.md:1`, `specs/service-parent-migration.spec.md:22`, `specs/README.md:19`)
+
+### 🚧 进行中 / 未完成
+- 登录、token 签发、客户端管理等业务能力仍未实现
+
+### 📌 下次继续
+- 继续按新业务 spec 实现 OAuth2 第一批认证鉴权能力；如需要 DB/Redis，再按职责引入对应 starter
+
+### 💡 记录
+- RED：POM 结构检查失败，确认旧 POM 仍直接声明 Web MVC、Undertow、Validation、Actuator
+- GREEN：POM 结构检查通过，公共 Web 基线只通过 `infra-web` 引入
+- 验证命令：`JAVA_HOME=/Users/photonpay/software/jdk/jdk-21.0.10.jdk/Contents/Home mvn -q test` 通过
+- 验证命令：`git diff --check` 通过
+
+---
+
 ## 2026-06-06 (迁移 infra-service-parent)
 
 ### 🎯 目标

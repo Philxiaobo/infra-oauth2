@@ -10,6 +10,8 @@ Java 21 + Spring Boot 3.5.14 + Spring Security Authorization Server + Spring MVC
 
 本服务继承 `com.phil.infra:infra-service-parent:1.0-SNAPSHOT`。Spring Boot parent、公共插件和 `infra-*` 版本由 `infra-genesis` 统一维护；本服务只保留 OAuth2 / Authorization Server 等职责型独有依赖。
 
+Servlet MVC、Undertow、Validation、Actuator、服务内异常处理和访问日志等公共 Web 基线统一由 `infra-web` 承接，OAuth2 POM 不重复声明这些公共依赖。
+
 ## 快速开始
 
 ```bash
